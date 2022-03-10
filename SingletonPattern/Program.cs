@@ -2,41 +2,28 @@
 
 namespace SingletonPattern
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            MysqlConnection mysqlConnection = new MysqlConnection("MysqlDataBase");
-            ClassOneNeedsMysqlConnection client1 = new ClassOneNeedsMysqlConnection(mysqlConnection);
+            var conn = MysqlConnection_SINGLETON.getInstance();
+            ClassOneNeedsMysqlConnection_SINGLETON client1 = new ClassOneNeedsMysqlConnection_SINGLETON(conn);
+            ClassTwoNeedsMysqlConnection_SINGLETON client2 = new ClassTwoNeedsMysqlConnection_SINGLETON(conn);
+
+            client1.MakeDbCall();
+            client2.MakeDbCall();
+
         }
     }
 
-    //dependency class
-    public class MysqlConnection
-    {
-        public string DbName { get; private set; }
-
-        public MysqlConnection(string dbName)
-        {
-            DbName = dbName;
-            Console.WriteLine($"Database connection {DbName} oppened");
-        }
-
-        public void someDbMethod()
-        {
-            Console.WriteLine($"Method call on => {DbName}");
-        }
-
-    }
-
-    //client class
-    public class ClassOneNeedsMysqlConnection
+    public class ClassOneNeedsMysqlConnection_SINGLETON
     {
         public string Name { get; private set; }
-        private MysqlConnection mysqlConnection;
+        private MysqlConnection_SINGLETON mysqlConnection;
 
-        public ClassOneNeedsMysqlConnection(MysqlConnection connection)
+        public ClassOneNeedsMysqlConnection_SINGLETON(MysqlConnection_SINGLETON connection)
         {
+            Console.WriteLine();
             mysqlConnection = connection;
         }
 
@@ -46,19 +33,39 @@ namespace SingletonPattern
         }
     }
 
-    public class ClassTwoNeedsMysqlConnection
+    public class ClassTwoNeedsMysqlConnection_SINGLETON
     {
         public string Name { get; private set; }
-        private MysqlConnection connection;
+        private MysqlConnection_SINGLETON mysqlConnection;
 
-        public ClassTwoNeedsMysqlConnection()
+        public ClassTwoNeedsMysqlConnection_SINGLETON(MysqlConnection_SINGLETON connection)
         {
-
+            Console.WriteLine();
+            mysqlConnection = connection;
         }
 
         public void MakeDbCall()
         {
-
+            mysqlConnection.someDbMethod();
+        }
+    }
+    public class MysqlConnection_SINGLETON
+    {
+        private static MysqlConnection_SINGLETON mysqlconn = new MysqlConnection_SINGLETON("mysqlConnection");
+        public string DbName { get; private set; }
+        public MysqlConnection_SINGLETON(string dbName)
+        {
+            DbName = dbName;
+            Console.WriteLine($"Database connection {DbName} oppened");
+            
+        }
+        public void someDbMethod()
+        {
+            Console.WriteLine($"Method call on => {DbName}");
+        }
+        public static MysqlConnection_SINGLETON getInstance()
+        {
+            return mysqlconn;
         }
     }
 }
