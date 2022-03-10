@@ -6,14 +6,17 @@ namespace AdapterPattern
     {
         static void Main(string[] args)
         {
+            /*
             IMediaPlayer player = new MP3Format();
             IMediaPlayer player2 = new WAVFormat();
             player.play("Enter Sandman");
             player2.play("Sad But True");
 
-            IMediaPlayer player3 = new MKVFormatAdapter_IOC(new MKVFormat());
-            //IMediaPlayer player4 = new AVIFormatAdapter_IOC(new AVIFormat());
+            IMediaPlayer player3 = new FormatAdapter_IOC(new MKVFormat());
+            IMediaPlayer player4 = new FormatAdapter_IOC(new AVIFormat());
+
             player3.play("The Shining");
+            */
         }
 
 
@@ -36,7 +39,6 @@ namespace AdapterPattern
             Console.WriteLine($"WAV Format playing => {name}.wav");
         }
     }
-
     public interface IUnsupportedFormat
     {
         void playVideo(string name);
@@ -48,7 +50,14 @@ namespace AdapterPattern
             Console.WriteLine($"MKV Format playing => {name}.mkv");
         }
     }
-
+    public class AVIFormat : IUnsupportedFormat
+    {
+        public void playVideo(string name)
+        {
+            Console.WriteLine($"AVI Format playing => {name}.avi");
+        }
+    }
+    //Does not invert control. Instantiates dependency in constructor
     public class MKVFormatAdapter : IMediaPlayer
     {
         private MKVFormat mkvFormat;
@@ -61,7 +70,6 @@ namespace AdapterPattern
             mkvFormat.playVideo(name);
         }
     }
-
     public class MKVFormatAdapter_IOC : IMediaPlayer
     {
         private MKVFormat mkvFormat;
@@ -72,6 +80,18 @@ namespace AdapterPattern
         public void play(string name)
         {
             mkvFormat.playVideo(name);
+        }
+    }
+    public class FormatAdapter_IOC : IMediaPlayer
+    {
+        private IUnsupportedFormat format;
+        public FormatAdapter_IOC(IUnsupportedFormat format)
+        {
+            this.format = format;
+        }
+        public void play(string name)
+        {
+            format.playVideo(name);
         }
     }
 }
